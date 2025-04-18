@@ -1,0 +1,25 @@
+
+.login-page {
+    
+    min-height: calc(100vh - 150px); 
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    padding-top: 20px; 
+  }
+  
+  .switch-auth-link {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #555;
+  }
+  
+  .switch-auth-link a {
+      color: #8A2BE2;
+      font-weight: bold;
+      text-decoration: none;
+  }
+  
+  .switch-auth-link a:hover {
+      text-decoration: underline;
+  }
