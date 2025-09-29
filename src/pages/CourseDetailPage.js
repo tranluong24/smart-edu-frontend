@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom"; 
+import { useParams, Link, useNavigate } from "react-router-dom"; 
 import {
+  deleteCourse,
   fetchCourseDetails,
   getStudentCourseCompletion, 
 } from "../api/apiService";
 import LessonItem from "../components/Course/LessonItem"; 
 import "./CourseDetailPage.css"; 
 import { useAuth } from "../hooks/useAuth"; 
+import ConfirmationModal from "../components/Common/ConfirmationModal";
 
 
 const PLACEHOLDER_IMAGE_URL =
@@ -15,6 +17,7 @@ const PLACEHOLDER_IMAGE_URL =
 const CourseDetailPage = () => {
   const { courseId } = useParams(); 
   const { user } = useAuth(); 
+  const navigate = useNavigate();
 
   
   const [course, setCourse] = useState(null);
@@ -24,6 +27,10 @@ const CourseDetailPage = () => {
   // State riêng cho tiến độ hoàn thành của student
   const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
   const [loadingCompletion, setLoadingCompletion] = useState(false); // Loading cho tiến độ
+
+  // State cho modal xác nhận xóa
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // useEffect để fetch dữ liệu khi courseId hoặc user thay đổi
   useEffect(() => {
@@ -113,6 +120,24 @@ const CourseDetailPage = () => {
   };
 
   
+  // Function để xử lý xóa khóa học
+  const handleDeleteCourse = async () => {
+    setIsDeleting(true);
+    console.log('đã ấn xóa')
+    try {
+      await deleteCourse(courseId);
+      // Xóa thành công, chuyển về trang danh sách khóa học
+      navigate('/courses', { 
+        state: { message: 'Course deleted successfully' } 
+      });
+    } catch (error) {
+      console.error('Failed to delete course:', error);
+      setError('Failed to delete course. Please try again.');
+      setShowDeleteModal(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   
   if (loading)
@@ -191,12 +216,21 @@ const CourseDetailPage = () => {
           <h2>Lessons</h2>
           {}
           {user && user.role === "admin" && (
-            <Link
-              to={`/admin/courses/${courseId}/lessons/new`} 
-              className="add-lesson-button"
-            >
-              + Add Lesson
-            </Link>
+            <div className="admin-buttons">
+              <Link
+                to={`/admin/courses/${courseId}/lessons/new`} 
+                className="add-lesson-button"
+              >
+                + Add Lesson
+              </Link>
+              <button
+                className="delete-course-button"
+                onClick={() => setShowDeleteModal(true)}
+                title="Delete Course"
+              >
+                🗑️ Delete Course
+              </button>
+            </div>
           )}
         </div>
 
@@ -219,6 +253,17 @@ const CourseDetailPage = () => {
           !loading && <p>No lessons available for this course yet.</p>
         )}
       </section>
+            {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteCourse}
+        title="Delete Course"
+        message={`Are you sure you want to delete the course "${course?.title}"?`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

@@ -24,7 +24,8 @@ export const fetchUserProfile = () => apiClient.get("/auth/me");
 export const createCourse = (courseData) =>
   apiClient.post("/courses", courseData);
 
-
+export const deleteCourse = (courseId) => 
+  apiClient.delete(`/courses/${courseId}`)
 
 export const createLesson = (courseId, lessonData) =>
   apiClient.post(`/courses/${courseId}/lessons`, lessonData);
