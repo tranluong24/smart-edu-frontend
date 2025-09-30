@@ -7,6 +7,9 @@ import { useAuth } from "../hooks/useAuth";
 import ConfirmationModal from "../components/Common/ConfirmationModal";
 import { useProgressSync } from "../hooks/useProgressSync";
 
+import EditCourseModal from "../components/Admin/EditCourseModal";
+import { updateCourse } from "../api/apiService";
+
 const PLACEHOLDER_IMAGE_URL =
   "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png";
 
@@ -23,11 +26,15 @@ const CourseDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   // Sử dụng custom hook cho real-time progress sync
-  const {
-    completedLessonIds,
-    lastSyncTime
-  } = useProgressSync(courseId, user?.id, user?.role);
+  const { completedLessonIds, lastSyncTime } = useProgressSync(
+    courseId,
+    user?.id,
+    user?.role
+  );
 
   // useEffect để fetch chi tiết khóa học (không bao gồm progress)
   useEffect(() => {
@@ -71,6 +78,29 @@ const CourseDetailPage = () => {
     const percentage =
       totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
     return { count: completedCount, total: totalCount, percentage };
+  };
+
+  const handleUpdateCourse = async (formData) => {
+    setIsUpdating(true);
+    try {
+      const response = await updateCourse(courseId, formData);
+
+      // Update local state
+      setCourse((prev) => ({
+        ...prev,
+        ...response.data.updatedCourse,
+      }));
+
+      setShowEditModal(false);
+
+      // Show success message (optional)
+      console.log("Course updated successfully");
+    } catch (error) {
+      console.error("Failed to update course:", error);
+      setError("Failed to update course. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // Function để xử lý xóa khóa học
@@ -145,7 +175,7 @@ const CourseDetailPage = () => {
                 </div>
               </div>
 
-              {(
+              {
                 <div className="progress-container">
                   <div className="progress-bar-wrapper">
                     <div
@@ -161,7 +191,7 @@ const CourseDetailPage = () => {
                     {progress.count}/{progress.total} ({progress.percentage}%)
                   </span>
                 </div>
-              )}
+              }
             </div>
           )}
       </div>
@@ -173,6 +203,13 @@ const CourseDetailPage = () => {
           {}
           {user && user.role === "admin" && (
             <div className="admin-buttons">
+              <button
+                className="edit-course-button"
+                onClick={() => setShowEditModal(true)}
+                title="Edit Course"
+              >
+                ✏️ Edit Course
+              </button>
               <Link
                 to={`/admin/courses/${courseId}/lessons/new`}
                 className="add-lesson-button"
@@ -208,6 +245,14 @@ const CourseDetailPage = () => {
         )}
       </section>
       {/* Confirmation Modal */}
+      <EditCourseModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleUpdateCourse}
+        course={course}
+        isLoading={isUpdating}
+      />
+
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

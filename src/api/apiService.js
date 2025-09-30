@@ -1,11 +1,9 @@
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL; 
+const API_URL = process.env.REACT_APP_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_URL,
-  
-  
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -20,16 +18,17 @@ export const login = (credentials) =>
   apiClient.post("/auth/login", credentials);
 export const fetchUserProfile = () => apiClient.get("/auth/me");
 
-
 export const createCourse = (courseData) =>
   apiClient.post("/courses", courseData);
 
-export const deleteCourse = (courseId) => 
-  apiClient.delete(`/courses/${courseId}`)
+export const deleteCourse = (courseId) =>
+  apiClient.delete(`/courses/${courseId}`);
+
+export const updateCourse = (courseId, courseData) =>
+  apiClient.put(`/courses/${courseId}`, courseData);
 
 export const createLesson = (courseId, lessonData) =>
   apiClient.post(`/courses/${courseId}/lessons`, lessonData);
-
 
 export const fetchCourses = (page = 1, limit = 9) =>
   apiClient.get(`/courses?page=${page}&limit=${limit}`);
@@ -51,12 +50,11 @@ export const getStudentCourseCompletion = (studentId, courseId) =>
 export const getClassCourseCompletions = (classId, courseId) =>
   apiClient.get(`/class/${classId}/courses/${courseId}/completions`);
 
+export const createClass = (classData) => apiClient.post("/class", classData);
 
-export const createClass = (classData) => apiClient.post("/class", classData); 
+export const fetchMyClasses = () => apiClient.get("/class/myclasses");
 
-export const fetchMyClasses = () => apiClient.get("/class/myclasses"); 
-
-export const joinClass = (joinCode) => apiClient.post("/class/join", joinCode); 
+export const joinClass = (joinCode) => apiClient.post("/class/join", joinCode);
 
 export const fetchClassDetails = (classId) =>
   apiClient.get(`/class/${classId}`);
@@ -64,4 +62,5 @@ export const fetchClassDetails = (classId) =>
 export const fetchClassMembers = (classId) =>
   apiClient.get(`/class/${classId}/members`);
 
-export const fetchStudentInfo = (studentId) => apiClient.get(`/students/${studentId}/info`);
+export const fetchStudentInfo = (studentId) =>
+  apiClient.get(`/students/${studentId}/info`);
