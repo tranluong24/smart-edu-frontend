@@ -135,12 +135,28 @@
 
 .student-progress-bar-section h3 {
   font-size: 1.3em;
-
   color: var(--tekmonk-text-dark, #333);
-
-  margin-bottom: 12px;
-
+  margin-bottom: 0;
   font-weight: 600;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.last-sync {
+  font-size: 0.75em;
+  color: #999;
+  font-style: italic;
 }
 
 .progress-container {
