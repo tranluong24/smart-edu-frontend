@@ -1,113 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom"; 
-import {
-  deleteCourse,
-  fetchCourseDetails,
-  getStudentCourseCompletion, 
-} from "../api/apiService";
-import LessonItem from "../components/Course/LessonItem"; 
-import "./CourseDetailPage.css"; 
-import { useAuth } from "../hooks/useAuth"; 
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { deleteCourse, fetchCourseDetails } from "../api/apiService";
+import LessonItem from "../components/Course/LessonItem";
+import "./CourseDetailPage.css";
+import { useAuth } from "../hooks/useAuth";
 import ConfirmationModal from "../components/Common/ConfirmationModal";
-
+import { useProgressSync } from "../hooks/useProgressSync";
 
 const PLACEHOLDER_IMAGE_URL =
   "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png";
 
 const CourseDetailPage = () => {
-  const { courseId } = useParams(); 
-  const { user } = useAuth(); 
+  const { courseId } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  
   const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // State riêng cho tiến độ hoàn thành của student
-  const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
-  const [loadingCompletion, setLoadingCompletion] = useState(false); // Loading cho tiến độ
 
   // State cho modal xác nhận xóa
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // useEffect để fetch dữ liệu khi courseId hoặc user thay đổi
+  // Sử dụng custom hook cho real-time progress sync
+  const {
+    completedLessonIds,
+    lastSyncTime
+  } = useProgressSync(courseId, user?.id, user?.role);
+
+  // useEffect để fetch chi tiết khóa học (không bao gồm progress)
   useEffect(() => {
-    const loadData = async () => {
-      // Reset trạng thái khi bắt đầu load
+    const loadCourseData = async () => {
       setLoading(true);
-      // Chỉ set loading completion nếu là student
-      if (user?.role === "student") {
-        setLoadingCompletion(true);
-      }
       setError("");
-      setCourse(null); // Xóa dữ liệu cũ
-      setCompletedLessonIds(new Set()); // Reset tiến độ
+      setCourse(null);
 
       try {
-        // 1. Luôn fetch chi tiết khóa học (lessons, title, description,...)
-        const courseDetailsPromise = fetchCourseDetails(courseId);
-
-        // 2. Chỉ fetch tiến độ hoàn thành nếu user là student
-        let completionPromise = Promise.resolve({ data: { completedLessonIds: [] } }); // Giá trị mặc định
-        if (user && user.role === "student" && user.id) {
-          completionPromise = getStudentCourseCompletion(user.id, courseId);
-        }
-
-        
-        const [courseDetailsRes, completionRes] = await Promise.all([
-          courseDetailsPromise,
-          completionPromise,
-        ]);
-
-        
+        const courseDetailsRes = await fetchCourseDetails(courseId);
         setCourse(courseDetailsRes.data);
-        
-        setCompletedLessonIds(
-          new Set(Array.isArray(completionRes.data?.completedLessonIds) ? completionRes.data.completedLessonIds : [])
-        );
-
       } catch (err) {
-        console.error(`Failed to load data for course ${courseId}:`, err);
-        
+        console.error(`Failed to load course ${courseId}:`, err);
+
         if (err.response && err.response.status === 404) {
           setError("Course not found.");
-        } else if (err.response && err.response.status === 403 && user?.role === 'student') {
-          
-          setError("Could not load your completion status for this course.");
-          
-          try {
-              const courseDetailsRes = await fetchCourseDetails(courseId); 
-              setCourse(courseDetailsRes.data);
-          } catch (courseErr) {
-              setError("Course not found or failed to load details."); 
-              setCourse(null);
-          }
         } else {
           setError("Failed to load course data. Please try again later.");
-          setCourse(null); 
         }
-        setCompletedLessonIds(new Set()); 
+        setCourse(null);
       } finally {
-        
         setLoading(false);
-        setLoadingCompletion(false);
       }
     };
 
-    
     if (courseId) {
-      loadData();
+      loadCourseData();
     } else {
       setError("Invalid Course ID.");
       setLoading(false);
     }
-  
-  
-  }, [courseId, user]);
+  }, [courseId]);
 
-  
   const calculateProgress = () => {
     const lessonsArray = course?.lessons || [];
     if (!lessonsArray || lessonsArray.length === 0) {
@@ -115,44 +68,40 @@ const CourseDetailPage = () => {
     }
     const completedCount = completedLessonIds.size;
     const totalCount = lessonsArray.length;
-    const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+    const percentage =
+      totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
     return { count: completedCount, total: totalCount, percentage };
   };
 
-  
   // Function để xử lý xóa khóa học
   const handleDeleteCourse = async () => {
     setIsDeleting(true);
-    console.log('đã ấn xóa')
+    console.log("đã ấn xóa");
     try {
       await deleteCourse(courseId);
       // Xóa thành công, chuyển về trang danh sách khóa học
-      navigate('/courses', { 
-        state: { message: 'Course deleted successfully' } 
+      navigate("/courses", {
+        state: { message: "Course deleted successfully" },
       });
     } catch (error) {
-      console.error('Failed to delete course:', error);
-      setError('Failed to delete course. Please try again.');
+      console.error("Failed to delete course:", error);
+      setError("Failed to delete course. Please try again.");
       setShowDeleteModal(false);
     } finally {
       setIsDeleting(false);
     }
   };
 
-  
   if (loading)
     return <div className="loading-message">Loading course details...</div>;
 
-  
   if (error && !course) return <div className="error-message">{error}</div>;
 
-  
   if (!course)
     return <div className="error-message">Course data is not available.</div>;
 
-  
   const progress = calculateProgress();
-  
+
   const headerImageUrl = course.img_url || PLACEHOLDER_IMAGE_URL;
 
   return (
@@ -164,8 +113,10 @@ const CourseDetailPage = () => {
           alt={course.title || "Course Header Image"}
           className="course-detail-header-image"
           onError={(e) => {
-            console.warn(`Failed to load header image: ${headerImageUrl}, using placeholder.`);
-            e.target.onerror = null; 
+            console.warn(
+              `Failed to load header image: ${headerImageUrl}, using placeholder.`
+            );
+            e.target.onerror = null;
             e.target.src = PLACEHOLDER_IMAGE_URL;
           }}
         />
@@ -175,14 +126,26 @@ const CourseDetailPage = () => {
         </p>
       </section>
 
-      {}
-      <div className="course-progess"> {}
-        {user && user.role === 'student' && course.lessons && course.lessons.length > 0 && (
-          <div className="student-progress-bar-section">
-            {}
-            {!loadingCompletion ? (
-              <>
+      {/* Progress Section */}
+      <div className="course-progess">
+        {user &&
+          user.role === "student" &&
+          course.lessons &&
+          course.lessons.length > 0 && (
+            <div className="student-progress-bar-section">
+              <div className="progress-header">
                 <h3>Your Progress</h3>
+                <div className="progress-controls">
+                  {lastSyncTime > 0 && (
+                    <span className="last-sync">
+                      Last updated:{" "}
+                      {new Date(lastSyncTime).toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {(
                 <div className="progress-container">
                   <div className="progress-bar-wrapper">
                     <div
@@ -198,16 +161,9 @@ const CourseDetailPage = () => {
                     {progress.count}/{progress.total} ({progress.percentage}%)
                   </span>
                 </div>
-              </>
-            ) : (
-              <p className="loading-text">Loading your progress...</p>
-            )}
-             {}
-             {error && !loading && !loadingCompletion && (
-                 <p className="error-text-inline">{error}</p>
-             )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
       </div>
 
       {}
@@ -218,7 +174,7 @@ const CourseDetailPage = () => {
           {user && user.role === "admin" && (
             <div className="admin-buttons">
               <Link
-                to={`/admin/courses/${courseId}/lessons/new`} 
+                to={`/admin/courses/${courseId}/lessons/new`}
                 className="add-lesson-button"
               >
                 + Add Lesson
@@ -242,18 +198,16 @@ const CourseDetailPage = () => {
               <LessonItem
                 key={lesson.id}
                 lesson={lesson}
-                
-                isCompleted={completedLessonIds.has(lesson.id)} 
-                index={index} 
+                isCompleted={completedLessonIds.has(lesson.id)}
+                index={index}
               />
             ))}
           </ul>
         ) : (
-          
           !loading && <p>No lessons available for this course yet.</p>
         )}
       </section>
-            {/* Confirmation Modal */}
+      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
