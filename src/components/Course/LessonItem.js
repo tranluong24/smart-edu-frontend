@@ -46,7 +46,7 @@ const LessonItem = ({ lesson, index, isCompleted: propIsCompleted }) => {
             rel="noopener noreferrer"
             className="lesson-title-link" 
         >
-          {lesson.title} ? {lesson.title}: {lessonNumber}
+          {lesson.title ? lesson.title : lessonNumber}
         </a>
       </div>
 
