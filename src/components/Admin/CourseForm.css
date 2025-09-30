@@ -1,0 +1,108 @@
+.course-form {
+    max-width: 600px;
+    width: 90%;
+    margin: 40px auto 80px;
+    /* Thêm margin bottom 80px */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.course-form h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+.course-form .form-group {
+    margin-bottom: 25px;
+}
+
+.course-form .form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95em;
+}
+
+.course-form .form-group input,
+.course-form .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.course-form .form-group input:focus,
+.course-form .form-group textarea:focus {
+    outline: none;
+    border-color: #8e24aa;
+    box-shadow: 0 0 0 3px rgba(142, 36, 170, 0.1);
+}
+
+.course-form .form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.course-form .submit-button {
+    width: 100%;
+    padding: 14px 20px;
+    margin-top: 20px;
+    background-color: #8e24aa;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.course-form .submit-button:hover:not(:disabled) {
+    background-color: #7b1fa2;
+    transform: translateY(-1px);
+}
+
+.course-form .submit-button:disabled {
+    background-color: #b39ddb;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.course-form .error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin: -5px 0 20px;
+    text-align: left;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .course-form {
+        width: 95%;
+        margin: 20px auto 60px;
+        padding: 20px;
+    }
+
+    .course-form h2 {
+        font-size: 1.5em;
+        margin-bottom: 25px;
+    }
+
+    .course-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .course-form .submit-button {
+        padding: 16px 20px;
+        /* Larger touch target on mobile */
+    }
+}
