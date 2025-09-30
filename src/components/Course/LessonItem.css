@@ -1,146 +1,183 @@
-
-
-
 .lessons-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-
 .lesson-item {
-display: flex;                  
-justify-content: space-between; 
-align-items: center;            
-padding: 14px 18px;             
-border: 1px solid #e9ecef;      
-margin-bottom: 8px;               
-border-radius: 6px;               
-background-color: #fff;           
-           
-transition: background-color 0.2s ease, border-color 0.2s ease;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
+.lesson-item-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid #e9ecef;
+  background-color: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-
-
+.lesson-item-link:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  text-decoration: none;
+  color: inherit;
+}
 
 .lesson-info {
   display: flex;
   align-items: center;
-  gap: 10px;                     
-  flex-grow: 1;                  
-  margin-right: 15px;            
-  overflow: hidden;              
+  gap: 12px;
+  flex-grow: 1;
+  margin-right: 15px;
+  overflow: hidden;
 }
 
 .lesson-number {
+  font-weight: 600;
+  color: #6c757d;
+  min-width: 30px;
+  text-align: center;
+  background-color: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.lesson-title {
+  color: #343a40;
   font-weight: 500;
-  color: #6c757d;                 
-  min-width: 25px;               
-  text-align: right;
+  font-size: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
 }
 
-
-.lesson-title-link {
-  color: #343a40;                 
-  font-weight: 500;
-  text-decoration: none;          
-  transition: color 0.2s ease;
-  
-  white-space: normal;
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+.lesson-status {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
-
-.lesson-title-link:hover {
-  color: #8e24aa;                 
-  text-decoration: underline;     
-}
-
 
 .completion-status {
-font-size: 0.9em;
-font-weight: 500;
-white-space: nowrap;             
-padding: 4px 10px;               
-border-radius: 12px;             
-min-width: 120px;                
-text-align: right;               
-flex-shrink: 0;                  
-font-style: normal;              
+  font-size: 0.9em;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 16px;
+  min-width: 140px;
+  text-align: center;
+  font-style: normal;
+  transition: all 0.2s ease;
 }
 
-
-.completion-status.loading {
-  color: #6c757d;
-  font-style: italic; 
+/* Completed state */
+.lesson-item.completed .lesson-item-link {
+  background-color: #e6f4ea;
+  border-color: #b2dfbc;
 }
 
-
-
-.lesson-item.completed {
-background-color: #e6f4ea;        
-border-color: #b2dfbc;            
+.lesson-item.completed .lesson-item-link:hover {
+  background-color: #d4edda;
+  border-color: #a3d9a4;
 }
 
-
-.lesson-item.completed .lesson-title-link,
 .lesson-item.completed .lesson-number {
-color: #1e4620;                  
-}
-.lesson-item.completed .lesson-title-link:hover {
-color: #198754; 
+  background-color: #d4edda;
+  color: #1e4620;
 }
 
-
+.lesson-item.completed .lesson-title {
+  color: #1e4620;
+}
 
 .lesson-item.completed .completion-status {
-color: #198754;                  
+  background-color: #d4edda;
+  color: #198754;
+  border: 1px solid #b2dfbc;
 }
 
-.lesson-item.completed .completion-status::before {
-  content: '✓ ';                  
-  font-weight: bold;
-  display: inline-block;          
-  margin-right: 10px;              
-  vertical-align: middle;
-}
-
-
-
+/* Not completed state */
 .lesson-item:not(.completed) .completion-status {
- color: #6c757d;                 
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #e9ecef;
 }
 
-.lesson-item:not(.completed) .completion-status::before {
-  content: '○ ';                  
-  font-weight: bold;
-  display: inline-block;          
-  margin-right: 10px;              
-  vertical-align: middle;
+.lesson-item:not(.completed) .lesson-item-link:hover .completion-status {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
 }
 
+/* Hover effects */
+.lesson-item-link:hover .lesson-title {
+  color: #8e24aa;
+}
 
+.lesson-item.completed .lesson-item-link:hover .lesson-title {
+  color: #198754;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .lesson-item-link {
+    padding: 12px 15px;
+  }
+
+  .lesson-info {
+    gap: 10px;
+    margin-right: 10px;
+  }
+
+  .lesson-number {
+    min-width: 25px;
+    padding: 3px 6px;
+    font-size: 0.85em;
+  }
+
+  .lesson-title {
+    font-size: 0.95em;
+  }
+
+  .completion-status {
+    font-size: 0.85em;
+    min-width: 120px;
+    padding: 4px 8px;
+  }
+}
 
 @media (max-width: 576px) {
-  .lesson-item {
-      padding: 12px 15px;
+  .lesson-item-link {
+    padding: 10px 12px;
   }
+
   .lesson-info {
-      gap: 8px;
-      margin-right: 10px;
+    gap: 8px;
+    margin-right: 8px;
   }
-  .lesson-title-link {
-      font-size: 0.95em;
+
+  .lesson-number {
+    min-width: 20px;
+    padding: 2px 4px;
+    font-size: 0.8em;
   }
+
+  .lesson-title {
+    font-size: 0.9em;
+  }
+
   .completion-status {
-      font-size: 0.85em;
-      min-width: auto; 
-      padding: 3px 8px;
-  }
-  .lesson-item.completed .completion-status::before,
-  .lesson-item:not(.completed) .completion-status::before {
-      margin-right: 4px; 
+    font-size: 0.8em;
+    min-width: 100px;
+    padding: 3px 6px;
   }
 }
