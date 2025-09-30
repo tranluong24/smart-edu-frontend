@@ -100,91 +100,97 @@ const EditCourseModal = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="edit-course-form">
-          <div className="form-group">
-            <label htmlFor="title">Course Title *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              className={errors.title ? "error" : ""}
-              placeholder="Enter course title"
-              disabled={isLoading}
-            />
-            {errors.title && (
-              <span className="error-message">{errors.title}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className={errors.description ? "error" : ""}
-              placeholder="Enter course description"
-              rows="4"
-              disabled={isLoading}
-            />
-            {errors.description && (
-              <span className="error-message">{errors.description}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="img_url">Image URL</label>
-            <input
-              type="url"
-              id="img_url"
-              name="img_url"
-              value={formData.img_url}
-              onChange={handleInputChange}
-              className={errors.img_url ? "error" : ""}
-              placeholder="https://example.com/image.jpg"
-              disabled={isLoading}
-            />
-            {errors.img_url && (
-              <span className="error-message">{errors.img_url}</span>
-            )}
-          </div>
-
-          {formData.img_url && (
+        <div className="modal-scroll-content">
+          <form onSubmit={handleSubmit} className="edit-course-form">
             <div className="form-group">
-              <label>Image Preview</label>
-              <div className="image-preview">
-                <img
-                  src={formData.img_url}
-                  alt="Course preview"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.nextSibling.style.display = "block";
-                  }}
-                />
-                <div className="image-error" style={{ display: "none" }}>
-                  Failed to load image
+              <label htmlFor="title">Course Title *</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                className={errors.title ? "error" : ""}
+                placeholder="Enter course title"
+                disabled={isLoading}
+              />
+              {errors.title && (
+                <span className="error-message">{errors.title}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                className={errors.description ? "error" : ""}
+                placeholder="Enter course description"
+                rows="4"
+                disabled={isLoading}
+              />
+              {errors.description && (
+                <span className="error-message">{errors.description}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="img_url">Image URL</label>
+              <input
+                type="url"
+                id="img_url"
+                name="img_url"
+                value={formData.img_url}
+                onChange={handleInputChange}
+                className={errors.img_url ? "error" : ""}
+                placeholder="https://example.com/image.jpg"
+                disabled={isLoading}
+              />
+              {errors.img_url && (
+                <span className="error-message">{errors.img_url}</span>
+              )}
+            </div>
+
+            {formData.img_url && (
+              <div className="form-group">
+                <label>Image Preview</label>
+                <div className="image-preview">
+                  <img
+                    src={formData.img_url}
+                    alt="Course preview"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                  <div className="image-error" style={{ display: "none" }}>
+                    Failed to load image
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </form>
+        </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn-save" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-        </form>
+        <div className="modal-footer">
+          <button
+            type="button"
+            className="btn-cancel"
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="btn-save"
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </div>
     </div>
   );
